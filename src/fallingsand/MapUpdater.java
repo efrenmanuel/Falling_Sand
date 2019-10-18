@@ -26,6 +26,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
     private int drawingWith;
     private final int drawingRadius;
     private final int pixelSize;
+    private boolean ltr, invertedOrientation;
 
     public MapUpdater(int[][] map, int pixelSize, int drawingRadius, Timer timer, boolean running) {
         this.map = map;
@@ -33,7 +34,8 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
         this.running = running;
         this.timer = timer;
         this.drawingRadius = drawingRadius;
-        drawingCoords=new int[]{0,0};
+        drawingCoords = new int[]{0, 0};
+        invertedOrientation=false;
         timer.start();
     }
 
@@ -42,22 +44,30 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
         if (drawing) {
             for (int y = -drawingRadius + drawingCoords[0]; y < drawingRadius + drawingCoords[0] + 1; y++) {
                 for (int x = -drawingRadius + drawingCoords[1]; x < drawingRadius + drawingCoords[1] + 1; x++) {
-                    System.out.println("x: "+x+"y: "+y);
+                    //System.out.println("x: "+drawingCoords[1]+"y: "+drawingCoords[0]);
                     if (y < map.length && y > 0 && x < map[0].length && x > 0) {
+                        System.out.println("Draw");
                         map[y][x] = drawingWith;
                     }
                 }
             }
         }
         for (int line = 0; line < map.length; line++) {
-
-            for (int pixel = 0; pixel < map[line].length; pixel++) {
+            if (line % 2 == 0) {
+                ltr = true;
+            } else {
+                ltr = false;
+            }
+            if (invertedOrientation){
+                ltr=!ltr;
+            }
+            for (int pixel = (ltr) ? 0 : map[line].length - 1; ltr ? (pixel < map[line].length) : pixel >= 0; pixel = ltr ? pixel + 1 : pixel - 1) {
                 int oldpixel;
                 switch (map[line][pixel]) {
                     case 0:
                         break;
                     case 1:
-                        if (line > 0 && map[line - 1][pixel] == 0) {
+                        if (line > 0 && (map[line - 1][pixel] == 0 || map[line - 1][pixel] == 2)) {
                             oldpixel = map[line - 1][pixel];
                             map[line - 1][pixel] = map[line][pixel];
                             map[line][pixel] = oldpixel;
@@ -147,6 +157,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
 
             }
         }
+        invertedOrientation=!invertedOrientation;
     }
 
     @Override
@@ -157,6 +168,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
     @Override
     public void mousePressed(MouseEvent e) {
         drawing = true;
+        //System.out.println("Drawing");
         switch (e.getButton()) {
             case 1:
                 drawingWith = 1;
@@ -167,7 +179,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
             case 3:
                 drawingWith = 3;
                 break;
-                
+
         }
     }
 
@@ -194,7 +206,8 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        drawingCoords = new int[]{map.length - 1 - e.getYOnScreen() / pixelSize, e.getXOnScreen() / pixelSize};
+        //System.out.println("Moved");
+        drawingCoords = new int[]{map.length - 1 - e.getY() / pixelSize, e.getX() / pixelSize};
     }
 
 }

@@ -71,7 +71,7 @@ public class SandViewer extends JPanel implements ActionListener, MouseListener,
                         color = Color.BLUE;
                         break;
                     case 3:
-                        color = Color.ORANGE;
+                        color = Color.GRAY;
                         break;
                     case 4:
                         color = Color.MAGENTA;
@@ -133,7 +133,7 @@ public class SandViewer extends JPanel implements ActionListener, MouseListener,
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        System.out.println((map.length - 1 - e.getYOnScreen() / pixelSize) + ", " + (e.getXOnScreen() / pixelSize));
+        //System.out.println((map.length - 1 - e.getYOnScreen() / pixelSize) + ", " + (e.getXOnScreen() / pixelSize));
         mapUpdater.mouseMoved(e);
     }
 
