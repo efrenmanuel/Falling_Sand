@@ -13,6 +13,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -20,7 +22,7 @@ import javax.swing.Timer;
  *
  * @author efren
  */
-public class SandViewer extends JPanel implements ActionListener, MouseListener, MouseMotionListener {
+public class SandViewer extends JPanel implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Timer timer = new Timer(1000 / 144, this);
     private final int pixelSize;
@@ -39,6 +41,7 @@ public class SandViewer extends JPanel implements ActionListener, MouseListener,
         this.setFocusable(true);
         addMouseListener(this);
         addMouseMotionListener(this);
+        addMouseWheelListener(this);
 
     }
 
@@ -135,6 +138,11 @@ public class SandViewer extends JPanel implements ActionListener, MouseListener,
     public void mouseMoved(MouseEvent e) {
         //System.out.println((map.length - 1 - e.getYOnScreen() / pixelSize) + ", " + (e.getXOnScreen() / pixelSize));
         mapUpdater.mouseMoved(e);
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        mapUpdater.mouseWheelMoved(e);
     }
 
 }

@@ -10,13 +10,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import javax.swing.Timer;
 
 /**
  *
  * @author efren
  */
-public class MapUpdater implements ActionListener, MouseListener, MouseMotionListener {
+public class MapUpdater implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
     private final Timer timer;
     private final boolean running;
@@ -24,7 +26,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
     private final int[][] map;
     private int[] drawingCoords;
     private int drawingWith;
-    private final int drawingRadius;
+    private int drawingRadius;
     private final int pixelSize;
     private boolean ltr, invertedOrientation;
 
@@ -35,7 +37,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
         this.timer = timer;
         this.drawingRadius = drawingRadius;
         drawingCoords = new int[]{0, 0};
-        invertedOrientation=false;
+        invertedOrientation = false;
         timer.start();
     }
 
@@ -45,7 +47,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
             for (int y = -drawingRadius + drawingCoords[0]; y < drawingRadius + drawingCoords[0] + 1; y++) {
                 for (int x = -drawingRadius + drawingCoords[1]; x < drawingRadius + drawingCoords[1] + 1; x++) {
                     //System.out.println("x: "+drawingCoords[1]+"y: "+drawingCoords[0]);
-                    if (y < map.length && y > 0 && x < map[0].length && x > 0) {
+                    if (y < map.length && y >= 0 && x < map[0].length && x >= 0) {
                         System.out.println("Draw");
                         map[y][x] = drawingWith;
                     }
@@ -58,8 +60,8 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
             } else {
                 ltr = false;
             }
-            if (invertedOrientation){
-                ltr=!ltr;
+            if (invertedOrientation) {
+                ltr = !ltr;
             }
             for (int pixel = (ltr) ? 0 : map[line].length - 1; ltr ? (pixel < map[line].length) : pixel >= 0; pixel = ltr ? pixel + 1 : pixel - 1) {
                 int oldpixel;
@@ -157,7 +159,7 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
 
             }
         }
-        invertedOrientation=!invertedOrientation;
+        invertedOrientation = !invertedOrientation;
     }
 
     @Override
@@ -208,6 +210,13 @@ public class MapUpdater implements ActionListener, MouseListener, MouseMotionLis
     public void mouseMoved(MouseEvent e) {
         //System.out.println("Moved");
         drawingCoords = new int[]{map.length - 1 - e.getY() / pixelSize, e.getX() / pixelSize};
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        if (drawingRadius - e.getWheelRotation() < 50 && drawingRadius - e.getWheelRotation() >= 0) {
+            drawingRadius = drawingRadius - e.getWheelRotation();
+        }
     }
 
 }
